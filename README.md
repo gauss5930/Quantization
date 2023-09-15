@@ -4,10 +4,24 @@ This repository is inspired by [HuggingFace Blog](https://huggingface.co/blog/ov
 
 This repository aims to the overview of the pros and cons of each quantization methods(bitsandbytes, GPTQ) through comparison experiments.
 
+## ToC
+
+The table of contents of this repository is as follows:
+
+1. [Pros & Cons Analysis(bistandbytes, autoGPTQ)](#pros--cons-analysis-bitsandbytes-autogptq)
+    1. [The benefits & rooms of improvements of bitsandbytes](#the-benefits--rooms-of-improvements-of-bitsandbytes)
+    2. [The benefits & rooms of improvements of autoGPTQ](#the-benefits--rooms-of-improvements-of-autogptq)
+    3. [Conculsion & Final words of Blog](#conclusion--final-words-of-blog)
+2. [Experiments](#experiments)
+    1. [Experimental Setup](#experimental-setup)
+    2. [Results](#results)
+3. [How to do?](#how-to-do)
+4. [Closing repository](#closing-repository)
+
 #### *Before Start...*
 To learn more about each quantization method, please check the resources below.
 
-## Resources
+### Resources
 
 - [GPTQ blogpost](https://huggingface.co/blog/gptq-integration) - gives an overview on what is the GPTQ quantization method and how to use it.
 - [bistandbytes 4-bit quantization blogpost](https://huggingface.co/blog/4bit-transformers-bitsandbytes) - This blogpost introduces 4-bit quantization and QLoRa, an efficient finetuning approach.
@@ -60,32 +74,66 @@ From this observation, one way to get better merged models would be to:
 
 ## Experiments
 
-The goal of the experiment is to verify the final conclusion of blogpost which is mentioned above! For the comparison, we compared the training time, inference time, and the performance degradation of bitsandbytes, auto-GPTQ, and proposed method.
+The goal of the experiment is to verify the final conclusion of blogpost which is mentioned above! For the comparison, we compared the training memory, throughput, and inference speed of bitsandbytes, auto-GPTQ, and proposed method.
 
 ### Experimental Setup
 
 We follow the setup used from [Overview of natively supported quantization schemes in 🤗 Transformers](https://huggingface.co/blog/overview-quantization-transformers)
 
 - **bitsandbytes**: 4-bit quantization w/ `bnb_4bit_compute_dtype=torch.float16`.
-- **auto-GPTQ**: 4-bit quantization w/ exllama kernels.
+- **auto-GPTQ**: 4-bit quantization w/ exllama kernels. We did not use exllama kernels while fine-tuning since it was not supported when fine-tuning
 
-We used `meta-llama/Llama-2-7b-hf` for experiments. Also, we used [LIMA dataset](https://huggingface.co/datasets/GAIR/lima) for fine-tuning.
+We used `daryl149/llama-2-7b-hf` & `TheBloke/Llama-2-7B-GPTQ` for experiments. In addition, we used [LIMA dataset](https://huggingface.co/datasets/GAIR/lima) for fine-tuning.
 
 **Baselines**
 
 1. fine-tune w/ bitsandbytes & inference w/ bitsandbytes
 2. fine-tune w/ auto-GPTQ & inference w/ auto-GPTQ
-3. fine-tune w/ bitsandbytes & inference 2/ auto-GPTQ(proposed method)
+3. fine-tune w/ auto-GPTQ & inference w/ bitsandbytes
+4. fine-tune w/ bitsandbytes & inference w/ auto-GPTQ(proposed method)
 
 ### Results
 
-we compared 
+**Benchmark**
 
-**Fine-tuning**
-|Quantization Method|Per-step Throughput(s)|Peak Memory Usage(MB)|
+We compared each baselines mentioned above, based on following categories.
+
+- **Fine-tuning**: Throughput per second(steps). This represents the number of steps the model processes per second when fine-tuning.
+- **Inference**: Average inference time(s). This refers to the time it takes to conduct one inference.
+
+#### Fine-tuning
+
+`finetune/bnb.py` & `finetune/auto_gptq.py` showed that how to compute the throughput of each method.
+In addition, `bnb_result.json` & `gptq_result.json` showed that the result of `finetune/bnb.py` & `finetune/auto_gptq.py`.
+
+As you can see from the table below, **bitsandbytes clearly shows faster fine-tuning speed** than auto-GPTQ.
+This result supports the suggestion of [Overview of natively supported quantization schemes in 🤗 Transformers](https://huggingface.co/blog/overview-quantization-transformers)!
+
+|Quantization Method|Throughput Per-Secondt(steps)|Fine-tuning time(s)|
 |---|---|---|
-|gptq|||
-|bnb|||
+|gptq|1.45|712|
+|bnb|2.18|469|
 
-**Inference**
+#### Inference
 그래프로 해서 넣을 예정
+
+## How to do?
+
+We have verified the suggestion of [Overview of natively supported quantization schemes in 🤗 Transformers](https://huggingface.co/blog/overview-quantization-transformers) is really effective through experiments!
+The following description is the process of our experiment.
+Please follow the process of our experiment, if you want to conduct them!
+
+1. **Fine-tuning**: Please check the `finetune`!
+2. **Inference**: Please check the `inference`!
+3. **Plot**: Just run this one line of code!
+
+```
+python plot.py
+```
+
+## Closing repository..
+
+Upon coming across a Hugging Face blog post, we were inspired by the idea: 'Let's validate the method proposed in that blog through a direct experiment!' With this motivation, we carried out an experiment and established a repository. 
+Our experiments yielded confirmation that the approach 'finetune w/ bnb & inference w/ GPT-Q' recommended in the blog post is indeed effective. 
+We hope this repository can provide people with a better understanding of model quantization.
+In addition, We extend our gratitude to all those who have explored this repository

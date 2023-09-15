@@ -12,3 +12,7 @@ bitsandbytes
 gc
 os
 time
+accelerate
+optimum
+auto-gptq
+trl

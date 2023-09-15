@@ -4,7 +4,6 @@ import torch
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 import argparse
 from huggingface_hub import login
-import pynvml
 import json
 
 def parse_args():
@@ -19,9 +18,7 @@ def parse_args():
 
 def main():
     args = parse_args()
-
-    pynvml.Init()
-    handle = pynvml.nvmlDeviceGetHandleByIndex(0)
+    login(args.auth_token)
 
     tokenizer = AutoTokenizer.from_pretrained(
         args.model_path,
@@ -42,7 +39,6 @@ def main():
     )
 
     model.config.use_cache = False
-    model.graident_checkpointing_enable()
     model = prepare_model_for_kbit_training(model)
 
     lora_config = LoraConfig(
@@ -56,20 +52,25 @@ def main():
 
     model = get_peft_model(model, lora_config)
 
-    data = load_dataset(args.data_path, split="train")
+    if args.data_path == "GAIR/lima":
+        data = load_dataset(args.data_path, data_files="train.jsonl", split="train")
+    else:
+        data = load_dataset(args.data_path, split="train")
     dataset = []
 
-    for line in data:
-        dataset.append(' '.join(line['conversations']))
+    def joinning(example):
+        example['conversations'] = ' '.join(example['conversations'])
+        return example
 
-    dataset = dataset.map(lambda samples: tokenizer(dataset), batched=True)
+    dataset = data.map(joinning)
+    dataset = dataset.map(lambda samples: tokenizer(samples['conversations']), batched=True)
 
     trainer = Trainer(
         model=model,
         train_dataset=dataset,
         args=TrainingArguments(
             per_device_train_batch_size=1,
-            gradient_accumulation_steps=4,
+            gradient_accumulation_steps=1,
             warmup_ratio=0.03,
             num_train_epochs=1,
             learning_rate=2e-4,
@@ -94,23 +95,21 @@ def main():
     torch.cuda.synchronize()
     time_usage = start_event.elapsed_time(end_event)
 
-    peak_memory = torch.cuda.max_memory_allocated(0) / 1024**2
-
     file_path = "info-gptq-finetuning.json"
     dictionary = {
         "Quant_name": "gptq",
-        "Memory": peak_memory,
-        "thropughpuyt": time_usage / len(dataset)
+        "thropughpuyt": len(dataset) / (time_usage / 1000)
     }
     json_object = json.dumps(dictionary, indent=4)
 
     with open(file_path, "x") as output_file:
         output_file.write(json_object)
 
-    if args.hub_path:
-        login(args.auth_token)
-        model.push_to_hub(args.hub_path)
-        tokenizer.push_to_hub(args.hub_path)
+    # Currently, there is no way to upload the 4bit model to the hub using push_to_hub.
+    # So, we recommend to upload the saved model manually.
+    # if args.hub_path:
+    #     model.push_to_hub(args.hub_path)
+    #     tokenizer.push_to_hub(args.hub_path)
 
 if __name__ == "__main__":
     torch.cuda.empty_cache()

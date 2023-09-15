@@ -7,22 +7,30 @@ Please run the following code sequentially.
 ```
 python inference/inference.py \
     --model_path bnb_finetuned_model_path \
+    --model_type bnb \
     --inf_type bnb
-    --output_dir /inference/inference_result.json
 ```
 
 **2. finetune w/ auto-GPTQ & inference w/ auto-GPTQ**
 ```
 python inference/inference.py \
-    --model_path gptq_fintuned_model_path \
+    --model_path gptq_fintuned_adapter_path \
+    --model_type gptq \
     --inf_type gptq \
-    --output_dir /inference/inference_result.json
 ```
 
 **3. finetune w/ bnb & inference w/ auto-GPTQ**
 ```
 python inference/inference.py \
     --model_path bnb_finetuned_model_path \
+    --model_type bnb \
     --inf_type gptq \
-    --output_dir /inference/inference_result.json
+```
+
+**4. finetune w/ auto-GPTQ & inference w/ bnb**
+```
+python inference/inference.py \
+    --model_path gptq_finetuned_adapter_path \
+    --model_type gptq \
+    --inf_type bnb \
 ```

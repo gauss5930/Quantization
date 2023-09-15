@@ -20,6 +20,7 @@ def main():
     sns.lineplot(data=data[0], color="blue", label="bnb-bnb")
     sns.lineplot(data=data[1], color="orange", label="gptq-gptq")
     sns.lineplot(data=data[2], color="green", label="bnb-gptq")
+    sns.lineplot(data=data[3], color="red", label="gptq-bnb")
 
     plt.ylabel("Average inference time (s)")
     plt.xlabel("Batch size")

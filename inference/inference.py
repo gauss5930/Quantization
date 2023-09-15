@@ -1,6 +1,7 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, GPTQConfig, BitsAndBytesConfig
+from peft import AutoPeftModelForCausalLM
 import torch
-import tqdm
+from tqdm import tqdm
 import json
 import argparse
 
@@ -9,10 +10,18 @@ BATCH_SIZE = [1, 2, 4, 8, 16, 32]
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_path", type=str)
-    parser.add_argument("--inf_type", type=str)
+    parser.add_argument(
+        "--model_type",
+        type=str,
+        help="The type of base model. ex) bnb / gptq"
+    )
+    parser.add_argument(
+        "--inf_type",
+        type=str,
+        help="The type of inference. ex) bnb / gptq"
+    )
     parser.add_argument("--num_batches", default=10, type=int)
     parser.add_argument("--max_new_token", default=30, type=int)
-    parser.add_argument("--output_dir", type=str)
 
     return parser.parse_args()
 
@@ -50,6 +59,10 @@ def run_benchmark(model, tokenizer, result):
 def inference():
     args = parse_args()
 
+    tokenizer = AutoTokenizer.from_pretrained(
+        args.model_path
+    )
+
     if args.inf_type == "bnb":
         quantization_config = BitsAndBytesConfig(
             load_in_4bit=True,
@@ -58,25 +71,32 @@ def inference():
     elif args.inf_type == "gptq":
         quantization_config = GPTQConfig(
             bits=4,
-            disable_exllama=False
+            disable_exllama=False,
+            dataset="c4",
+            tokenizer=tokenizer
         )
     else:
         raise ValueError(f"{args.inf_type} is not supported. Please choose 'bnb' or 'gptq'.")
     
-    model = AutoModelForCausalLM.from_pretrained(
-        args.model_path,
-        quantization_config=quantization_config,
-        device_map="auto"
-    )
+    if args.model_type == "bnb":
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model_path,
+            quantization_config=quantization_config,
+            device_map="auto"
+        )
+    elif args.model_type == "gptq":
+        model = AutoPeftModelForCausalLM.from_pretrained(
+            args.model_path,
+            quantization_config=quantization_config,
+            device_map="auto"
+        )
+    else:
+        raise ValueError(f"{args.model_type} is not supported. Please choose 'bnb' or 'gptq'.")
 
-    tokenizer = AutoTokenizer.from_pretrained(
-        args.model_path
-    )
-
-    result_dict = {}
+    result_dict = {"Method": args.model_type + "_" + args.inf_type + "_inference"}
     inference_result = run_benchmark(model=model, tokenizer=tokenizer, result=result_dict)
 
-    with open(args.output_dir, 'x') as f:
+    with open("/inference/inference_result.json", 'a') as f:
         json.dump(inference_result, f, indent=4)
 
 if __name__ == "__main__":
