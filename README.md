@@ -116,7 +116,7 @@ This result supports the suggestion of [Overview of natively supported quantizat
 #### Inference
 
 `inference/incerence.py` showed the inference speed of each method.
-We tried to follow the [original benchmark script](https://gist.github.com/younesbelkada/e576c0d5047c0c3f65b10944bc4c651c) provided from [Overview of natively supported quantization schemes in 🤗 Transformers](https://huggingface.co/blog/overview-quantization-transformers)
+We tried to follow the [original benchmark script](https://gist.github.com/younesbelkada/e576c0d5047c0c3f65b10944bc4c651c) provided from [Overview of natively supported quantization schemes in 🤗 Transformers](https://huggingface.co/blog/overview-quantization-transformers).
 The result is as follows:
 
 <img src="https://github.com/gauss5930/Quantization/blob/main/assets/inference_result.png">
