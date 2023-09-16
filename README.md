@@ -2,7 +2,7 @@
 
 This repository is inspired by [HuggingFace Blog](https://huggingface.co/blog/overview-quantization-transformers)! I really appreciate to all the authors of [Overview of natively supported quantization schemes in 🤗 Transformers](https://huggingface.co/blog/overview-quantization-transformers)
 
-This repository aims to the overview of the pros and cons of each quantization methods(bitsandbytes, GPTQ) through comparison experiments.
+This repository aims to check the pros and cons of each quantization method (bitsandbytes, GPTQ) through comparison experiments. In addition, we tried to verify the suggestion of blog post that 'finetune w/ bnb & inference w/ GPTQ is more efficient method'!
 
 ## ToC
 
@@ -38,9 +38,9 @@ Before starting experiments, let's look deep into the pros and cons of bitsandby
 
 **Benefits**
 
-- **easy** 😙: bitsandbytes does not require calibrating the quantized model. Also the quantization is performed on model load, no need to run any post-processing or preparation step.
+- **easy** 😙: bitsandbytes does not require calibrating the quantized model. Also, the quantization is performed on model load, no need to run any post-processing or preparation step.
 - **cross-modality interoperability** 🧰: Quantization works out of the box for any modality.
-- **0 performance degradation when merging adapters** ✅: You can merge the trained adapters to base model or dequantized model with no degradation of performance! it is not supported for GPTQ.
+- **0 performance degradation when merging adapters** ✅: You can merge the trained adapters to the base model or dequantized model with no degradation of performance! it is not supported for GPTQ.
 
 **Rooms of Improvement**
 
@@ -58,14 +58,14 @@ Before starting experiments, let's look deep into the pros and cons of bitsandby
 
 **Room of Improvements**
 
-- **calibration dataset**: The need of calibration dataset might discourage some users to go for GPTQ. Furthermore, it can take several hours to quantize the model.
+- **calibration dataset**: The need for a calibration dataset might discourage some users from going for GPTQ. Furthermore, it can take several hours to quantize the model.
 - **works only for language models**: auto-GPTQ has been designed to support only language models.
 
-## Conclusion & Final words of Blog
+## Conclusion & Final Words of Blog
 
-At the end of blogpost, they suggested that the following mechanism will be the most efficient & effective way to utilize quantization through several comparison experiments between bitsandbytes and auto-GPTQ.
-They saw that bitsandbytes is better suited for fine-tuning while GPTQ is better for generation. 
-From this observation, one way to get better merged models would be to:
+At the end of blog post, they suggested that the following mechanism will be the most efficient & effective way to utilize quantization through several comparison experiments between bitsandbytes and auto-GPTQ.
+They saw that bitsandbytes is better suited for fine-tuning while GPTQ is better for a generation. 
+From this observation, one way to get better-merged models would be to:
 
 1. Qunatize the base model using bitsandbytes
 2. Add & fine-tune the adapters
@@ -74,7 +74,7 @@ From this observation, one way to get better merged models would be to:
 
 ## Experiments
 
-The goal of the experiment is to verify the final conclusion of blogpost which is mentioned above! For the comparison, we compared the training memory, throughput, and inference speed of bitsandbytes, auto-GPTQ, and proposed method.
+The experiment's goal is to verify the final conclusion of the blog post mentioned above! For the comparison, we compared the training memory, throughput, and inference speed of bitsandbytes, auto-GPTQ, and the proposed method.
 
 ### Experimental Setup
 
@@ -95,15 +95,15 @@ We used `daryl149/llama-2-7b-hf` & `TheBloke/Llama-2-7B-GPTQ` for experiments. I
 
 **Benchmark**
 
-We compared each baselines mentioned above, based on following categories.
+We compared each baseline mentioned above, based on the following categories.
 
 - **Fine-tuning**: Throughput per second(steps). This represents the number of steps the model processes per second when fine-tuning.
 - **Inference**: Average inference time(s). This refers to the time it takes to conduct one inference.
 
 #### Fine-tuning
 
-`finetune/bnb.py` & `finetune/auto_gptq.py` showed that how to compute the throughput of each method.
-In addition, `bnb_result.json` & `gptq_result.json` showed that the result of `finetune/bnb.py` & `finetune/auto_gptq.py`.
+`finetune/bnb.py` & `finetune/auto_gptq.py` showed how to compute each method's throughput.
+In addition, `bnb_result.json` & `gptq_result.json` showed the result of `finetune/bnb.py` & `finetune/auto_gptq.py`.
 
 As you can see from the table below, **bitsandbytes clearly shows faster fine-tuning speed** than auto-GPTQ.
 This result supports the suggestion of [Overview of natively supported quantization schemes in 🤗 Transformers](https://huggingface.co/blog/overview-quantization-transformers)!
@@ -117,15 +117,15 @@ This result supports the suggestion of [Overview of natively supported quantizat
 
 `inference/incerence.py` showed the inference speed of each method.
 We tried to follow the [original benchmark script](https://gist.github.com/younesbelkada/e576c0d5047c0c3f65b10944bc4c651c) provided from [Overview of natively supported quantization schemes in 🤗 Transformers](https://huggingface.co/blog/overview-quantization-transformers)
-The result is as follws:
+The result is as follows:
 
-![](assets\inference_result.png)
+<img src="https://github.com/gauss5930/Quantization/blob/main/assets/inference_result.png">
 
 As you can see from the graph above, `bnb-gptq` shows the best performance, followed by `gptq-gptq` and `bnb-bnb`.
 
 #### Final Results
 
-In this way, benchmarking for fine-tuning & inference were completed.
+In this way, benchmarking for fine-tuning & inference was completed.
 The following table shows the comprehensive results. (In the case of Inference Speed, a batch size of 32 was used.)
 You can clearly see that `bnb-gptq` is more effective than other models!
 This proves that the method suggested in the [Blog](https://huggingface.co/blog/overview-quantization-transformers) is effective!
@@ -133,12 +133,12 @@ This proves that the method suggested in the [Blog](https://huggingface.co/blog/
 |Method|Throughput Per-Second(steps)|Inference Speed(step/s)|
 |---|---|---|
 |**bnb-bnb**|2.18|6.06|
-|**gptq-gptq**|1.45|2.04|
-|**bnb-gptq**|1.45|1.31|
+|**gptq-gptq**|**1.45**|2.04|
+|**bnb-gptq**👑|**1.45**|**1.31**|
 
 ## How to do?
 
-We have verified the suggestion of [Overview of natively supported quantization schemes in 🤗 Transformers](https://huggingface.co/blog/overview-quantization-transformers) is really effective through experiments!
+We have verified the suggestion of [Overview of natively supported quantization schemes in 🤗 Transformers](https://huggingface.co/blog/overview-quantization-transformers) is really practical through experiments!
 The following description is the process of our experiment.
 Please follow the process of our experiment, if you want to conduct them!
 
