@@ -89,8 +89,7 @@ We used `daryl149/llama-2-7b-hf` & `TheBloke/Llama-2-7B-GPTQ` for experiments. I
 
 1. fine-tune w/ bitsandbytes & inference w/ bitsandbytes
 2. fine-tune w/ auto-GPTQ & inference w/ auto-GPTQ
-3. fine-tune w/ auto-GPTQ & inference w/ bitsandbytes
-4. fine-tune w/ bitsandbytes & inference w/ auto-GPTQ(proposed method)
+3. fine-tune w/ bitsandbytes & inference w/ auto-GPTQ(proposed method)
 
 ### Results
 
@@ -109,13 +108,33 @@ In addition, `bnb_result.json` & `gptq_result.json` showed that the result of `f
 As you can see from the table below, **bitsandbytes clearly shows faster fine-tuning speed** than auto-GPTQ.
 This result supports the suggestion of [Overview of natively supported quantization schemes in 🤗 Transformers](https://huggingface.co/blog/overview-quantization-transformers)!
 
-|Quantization Method|Throughput Per-Secondt(steps)|Fine-tuning time(s)|
+|Quantization Method|Throughput Per-Second(steps)|Fine-tuning time(s)|
 |---|---|---|
 |gptq|1.45|712|
 |bnb|2.18|469|
 
 #### Inference
-그래프로 해서 넣을 예정
+
+`inference/incerence.py` showed the inference speed of each method.
+We tried to follow the [original benchmark script](https://gist.github.com/younesbelkada/e576c0d5047c0c3f65b10944bc4c651c) provided from [Overview of natively supported quantization schemes in 🤗 Transformers](https://huggingface.co/blog/overview-quantization-transformers)
+The result is as follws:
+
+![](assets\inference_result.png)
+
+As you can see from the graph above, `bnb-gptq` shows the best performance, followed by `gptq-gptq` and `bnb-bnb`.
+
+#### Final Results
+
+In this way, benchmarking for fine-tuning & inference were completed.
+The following table shows the comprehensive results. (In the case of Inference Speed, a batch size of 32 was used.)
+You can clearly see that `bnb-gptq` is more effective than other models!
+This proves that the method suggested in the [Blog](https://huggingface.co/blog/overview-quantization-transformers) is effective!
+
+|Method|Throughput Per-Second(steps)|Inference Speed(step/s)|
+|---|---|---|
+|**bnb-bnb**|2.18|6.06|
+|**gptq-gptq**|1.45|2.04|
+|**bnb-gptq**|1.45|1.31|
 
 ## How to do?
 
