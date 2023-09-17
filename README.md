@@ -150,6 +150,10 @@ Please follow the process of our experiment, if you want to conduct them!
 python plot.py
 ```
 
+## Future Work
+In the blog post, the performance degradation of each quantization method was also measured. 
+However, this repo could not proceed due to a lack of resources, so we would like to leave this as future work.
+
 ## Closing repository..
 
 Upon coming across a Hugging Face blog post, we were inspired by the idea: 'Let's validate the method proposed in that blog through a direct experiment!' With this motivation, we carried out an experiment and established a repository. 
