@@ -111,7 +111,7 @@ This result supports the suggestion of [Overview of natively supported quantizat
 |Quantization Method|Throughput Per-Second(steps)|Fine-tuning time(s)|
 |---|---|---|
 |gptq|1.45|712|
-|bnb|2.18|469|
+|bnb|**2.18**|**469**|
 
 #### Inference
 
@@ -121,7 +121,7 @@ The result is as follows:
 
 <img src="https://github.com/gauss5930/Quantization/blob/main/assets/inference_result.png">
 
-As you can see from the graph above, `bnb-gptq` shows the best performance, followed by `gptq-gptq` and `bnb-bnb`.
+As you can see from the graph above, **`bnb-gptq` shows the best performance**, followed by `gptq-gptq` and `bnb-bnb`.
 
 #### Final Results
 
@@ -130,7 +130,7 @@ The following table shows the comprehensive results. (In the case of Inference S
 You can clearly see that `bnb-gptq` is more effective than other models!
 This proves that the method suggested in the [Blog](https://huggingface.co/blog/overview-quantization-transformers) is effective!
 
-|Method|Throughput Per-Second(steps)|Inference Speed(step/s)|
+|Method|Throughput Per-Second(steps)⬆️|Inference Speed(step/s)⬇️|
 |---|---|---|
 |**bnb-bnb**|2.18|6.06|
 |**gptq-gptq**|**1.45**|2.04|
