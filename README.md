@@ -74,7 +74,7 @@ From this observation, one way to get better-merged models would be to:
 
 ## Experiments
 
-The experiment's goal is to verify the final conclusion of the blog post mentioned above! For the comparison, we compared the training memory, throughput, and inference speed of bitsandbytes, auto-GPTQ, and the proposed method.
+The experiment's goal is to verify the final conclusion of the blog post mentioned above! For the comparison, we compared the throughput and inference speed of bitsandbytes, auto-GPTQ, and the proposed method.
 
 ### Experimental Setup
 
