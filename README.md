@@ -51,15 +51,15 @@ Before starting experiments, let's look deep into the pros and cons of bitsandby
 
 **Benefits**
 
-- **fast for text generation**: GPTQ quantized models are fast compared to bitsandbytes quantized models for text generation.
-- **n-bit support**: GPTQ algorithm can quantize the model up to 2bits. However, recommended number of bits is 4.
-- **easily serializable**: GPTQ models support serialization for any number of bits.
-- **AMD support**: Nvidia as well as AMD are supported!
+- **fast for text generation** ⏩: GPTQ quantized models are fast compared to bitsandbytes quantized models for text generation.
+- **n-bit support** 🔢: GPTQ algorithm can quantize the model up to 2bits. However, recommended number of bits is 4.
+- **easily serializable** 😊: GPTQ models support serialization for any number of bits.
+- **AMD support** 💽: Nvidia as well as AMD are supported!
 
-**Room of Improvements**
+**Rooms of Improvements**
 
-- **calibration dataset**: The need for a calibration dataset might discourage some users from going for GPTQ. Furthermore, it can take several hours to quantize the model.
-- **works only for language models**: auto-GPTQ has been designed to support only language models.
+- **calibration dataset** 😓: The need for a calibration dataset might discourage some users from going for GPTQ. Furthermore, it can take several hours to quantize the model.
+- **works only for language models** 😢: auto-GPTQ has been designed to support only language models.
 
 ## Conclusion & Final Words of Blog
 
